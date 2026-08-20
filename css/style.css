@@ -1,0 +1,679 @@
+/* simplemode — token system per simplemode-brand-stylesheet.html (v2)
+   Light mode is stone, dark mode is ink; the hero footage follows the theme
+   (day city in light, night city in dark), so over-video text uses the same
+   tokens as the page. No true black/white, no shadows, no gradients —
+   depth via the one-step surface shift and hairline borders.
+   Manrope 300 (wordmark "simple" only) / 400 / 700. */
+
+:root {
+  --sm-bg: #EDEDEA;
+  --sm-surface: #F6F6F4;
+  --sm-text: #2A2A27;
+  --sm-muted: #7C7C76;
+  --sm-line: #D2D2CC;
+  --sm-line-strong: #B9B9B1;
+  --sm-placeholder: #A9A9A2;
+  --sm-bg-rgb: 237, 237, 234;
+  --sm-text-rgb: 42, 42, 39;
+  /* day footage carries ink text, so it takes a stronger stone wash;
+     night footage (dark mode) gets a lighter ink veil */
+  --hero-scrim-alpha: 0.38;
+  --nav-h: 64px;
+}
+
+[data-theme="dark"] {
+  --sm-bg: #232321;
+  --sm-surface: #2A2A27;
+  --sm-text: #F6F6F4;
+  --sm-muted: #A6A69D;
+  --sm-line: #3E3E39;
+  --sm-line-strong: #4A4A44;
+  --sm-placeholder: #6E6E67;
+  --sm-bg-rgb: 35, 35, 33;
+  --sm-text-rgb: 246, 246, 244;
+  --hero-scrim-alpha: 0.22;
+}
+
+/* no-JS visitors still get dark mode from their system preference */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --sm-bg: #232321;
+    --sm-surface: #2A2A27;
+    --sm-text: #F6F6F4;
+    --sm-muted: #A6A69D;
+    --sm-line: #3E3E39;
+    --sm-line-strong: #4A4A44;
+    --sm-placeholder: #6E6E67;
+    --sm-bg-rgb: 35, 35, 33;
+    --sm-text-rgb: 246, 246, 244;
+    --hero-scrim-alpha: 0.22;
+  }
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--sm-bg);
+  color: var(--sm-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+::selection { background: var(--sm-text); color: var(--sm-bg); }
+
+img, video { display: block; max-width: 100%; }
+
+a { color: inherit; text-decoration: none; }
+
+.wm-light { font-weight: 300; }
+.wm-bold { font-weight: 700; }
+
+.mark { display: block; flex-shrink: 0; }
+
+/* ---------- nav ---------- */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 32px;
+  color: var(--sm-text);
+  transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+}
+
+.nav-links { display: flex; align-items: center; gap: 24px; }
+
+.nav-links a:not(.btn) {
+  font-size: 13.5px;
+  letter-spacing: 0.04em;
+  color: rgba(var(--sm-text-rgb), 0.75);
+  transition: color 0.2s ease;
+}
+.nav-links a:not(.btn):hover { color: var(--sm-text); }
+
+.nav.scrolled {
+  background: rgba(var(--sm-bg-rgb), 0.88);
+  -webkit-backdrop-filter: blur(14px) saturate(1.1);
+  backdrop-filter: blur(14px) saturate(1.1);
+  border-bottom-color: var(--sm-line);
+}
+
+/* ---------- switches ---------- */
+
+.controls { display: flex; align-items: center; gap: 14px; }
+
+/* light/dark — the brand pill toggle, nav-scaled */
+.toggle {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  width: 48px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--sm-text);
+  position: relative;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background-color 0.35s ease;
+}
+.toggle::after { content: ''; position: absolute; inset: -10px; } /* 44px+ hit area */
+.toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.toggle-knob {
+  position: absolute;
+  top: 4px;
+  left: 5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--sm-bg);
+  transition: transform 0.35s cubic-bezier(0.6, 0, 0.2, 1), background-color 0.35s ease;
+}
+[data-theme="dark"] .toggle-knob { transform: translateX(20px); }
+
+/* sun/moon: current mode rides in the knob, the destination waits faint on
+   the empty end of the track */
+.toggle .t-icon {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  top: 50%;
+  transition: opacity 0.35s ease;
+}
+.t-hint { transform: translateY(-50%); color: var(--sm-bg); opacity: 0; }
+.t-hint-sun { left: 7px; }
+.t-hint-moon { right: 7px; }
+.toggle .t-hint-moon { opacity: 0.6; }
+[data-theme="dark"] .toggle .t-hint-moon { opacity: 0; }
+[data-theme="dark"] .toggle .t-hint-sun { opacity: 0.6; }
+.toggle-knob .t-icon {
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--sm-text);
+}
+.t-knob-moon { opacity: 0; }
+[data-theme="dark"] .t-knob-sun { opacity: 0; }
+[data-theme="dark"] .t-knob-moon { opacity: 1; }
+
+/* chicago/seattle — quiet typographic switch: two bare lowercase words,
+   a hairline underline slides to the active one (the theme pill stays the
+   nav's only filled control) */
+.seg {
+  position: relative;
+  display: flex;
+  height: 26px;
+}
+.seg::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+  width: calc(50% - 20px);
+  height: 1px;
+  background: var(--sm-text);
+  transition: transform 0.35s cubic-bezier(0.6, 0, 0.2, 1), background-color 0.35s ease;
+}
+[data-city="seattle"] .seg::before { transform: translateX(calc(100% + 20px)); }
+.seg-opt {
+  appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  width: 76px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+  color: rgba(var(--sm-text-rgb), 0.5);
+  border-radius: 6px;
+  transition: color 0.35s ease;
+  padding: 0 2px;
+}
+.seg-opt::after { content: ''; position: absolute; inset: -11px 0; } /* 44px+ hit area */
+.seg-opt .short { display: none; }
+.seg-opt:hover { color: rgba(var(--sm-text-rgb), 0.8); }
+.seg-opt:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+[data-city="chicago"] .seg-opt[data-city-opt="chicago"],
+[data-city="seattle"] .seg-opt[data-city-opt="seattle"] { color: var(--sm-text); }
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: inherit;
+  padding: 11px 22px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+}
+
+/* primary is --sm-text on --sm-bg, so it inverts with the theme automatically */
+.btn-primary { background: var(--sm-text); color: var(--sm-bg); }
+.btn-primary:hover { opacity: 0.85; }
+
+.btn-ghost {
+  color: var(--sm-text);
+  border-color: rgba(var(--sm-text-rgb), 0.55);
+  background: rgba(var(--sm-bg-rgb), 0.3);
+}
+.btn-ghost:hover { border-color: var(--sm-text); }
+
+.nav .btn-nav {
+  padding: 8px 18px;
+  background: var(--sm-text);
+  color: var(--sm-bg);
+}
+.nav .btn-nav:hover { opacity: 0.85; }
+
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+/* ---------- hero ---------- */
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  background: var(--sm-bg);
+  color: var(--sm-text);
+  overflow: hidden;
+  padding: calc(var(--nav-h) + 24px) 24px 96px;
+}
+
+.hero-media, .hero-media video, .hero-scrim { position: absolute; inset: 0; }
+
+.hero-media { transition: opacity 0.3s ease; }
+.hero-media.swapping { opacity: 0; }
+
+.hero-media video { width: 100%; height: 100%; object-fit: cover; }
+
+/* When narrow viewports crop the 16:9 frame, bias toward each clip's subject
+   (photographer pass): chicago's tower silhouettes, seattle-day's Space Needle.
+   No-op when nothing is cropped horizontally. */
+[data-city="chicago"] .hero-media video { object-position: 65% 50%; }
+[data-city="seattle"][data-theme="light"] .hero-media video { object-position: 78% 50%; }
+
+/* flat scrim, tinted toward the theme background — no gradients */
+.hero-scrim { background: rgba(var(--sm-bg-rgb), var(--hero-scrim-alpha)); }
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 820px;
+  text-align: center;
+}
+
+.hero-eyebrow {
+  font-size: 12.5px;
+  letter-spacing: 0.16em;
+  color: rgba(var(--sm-text-rgb), 0.72);
+  margin-bottom: 20px;
+}
+
+.hero-wordmark {
+  font-size: clamp(3.4rem, 9vw, 6.75rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+  margin-bottom: 18px;
+}
+
+.hero-tagline {
+  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 14px;
+}
+
+.hero-lede {
+  font-size: 15px;
+  color: rgba(var(--sm-text-rgb), 0.94);
+  max-width: 54ch;
+  margin: 0 auto 36px;
+  text-wrap: balance;
+}
+
+.hero-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+.scroll-cue {
+  position: absolute;
+  z-index: 1;
+  bottom: 26px;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: fit-content;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(var(--sm-text-rgb), 0.75);
+  transition: color 0.2s ease;
+  /* joins the end of the hero's entrance stagger */
+  animation: rise 0.9s cubic-bezier(0.16, 0.6, 0.2, 1) 0.55s both;
+}
+.scroll-cue:hover { color: var(--sm-text); }
+.scroll-cue i {
+  width: 1px;
+  height: 36px;
+  background: rgba(var(--sm-text-rgb), 0.5);
+  overflow: hidden;
+  position: relative;
+}
+.scroll-cue i::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -50%;
+  width: 1px;
+  height: 50%;
+  background: var(--sm-text);
+  animation: cue-drop 2.2s ease-in-out infinite;
+}
+@keyframes cue-drop {
+  0% { top: -50%; }
+  60%, 100% { top: 110%; }
+}
+
+/* hero entrance */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-inner > * { animation: rise 0.9s cubic-bezier(0.16, 0.6, 0.2, 1) both; }
+.hero-inner > *:nth-child(2) { animation-delay: 0.08s; }
+.hero-inner > *:nth-child(3) { animation-delay: 0.16s; }
+.hero-inner > *:nth-child(4) { animation-delay: 0.24s; }
+.hero-inner > *:nth-child(5) { animation-delay: 0.32s; }
+
+/* ---------- sections ---------- */
+
+.section {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 104px 32px 0;
+  scroll-margin-top: var(--nav-h);
+}
+.section:last-of-type { padding-bottom: 120px; }
+
+.section-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--sm-muted);
+  border-bottom: 1px solid var(--sm-line);
+  padding-bottom: 10px;
+  margin-bottom: 48px;
+  transition: border-color 0.35s ease;
+}
+
+.section-title {
+  font-size: clamp(1.65rem, 3vw, 2.3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.28;
+  margin-bottom: 20px;
+}
+
+.section p { font-size: 15.5px; }
+.muted { color: var(--sm-muted); }
+
+/* who we are */
+
+.who-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 24px 88px;
+  align-items: start;
+}
+
+.who-intro p + p { margin-top: 14px; }
+
+.who-stats div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--sm-line);
+}
+.who-stats div:first-child { padding-top: 4px; }
+.who-stats dt { font-size: clamp(24px, 7vw, 30px); font-weight: 700; letter-spacing: -0.01em; }
+.who-stats dd { font-size: 13px; color: var(--sm-muted); text-align: right; }
+
+.stats-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--sm-muted);
+  margin-bottom: 2px;
+}
+
+.stats-note { font-size: 13px; color: var(--sm-muted); padding-top: 14px; }
+
+.cards-label { margin-top: 80px; margin-bottom: 32px; }
+
+/* founders — rhomboid photo cutouts over matching bio blurbs */
+
+.founders {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px 32px;
+}
+
+.founder-photo {
+  aspect-ratio: 4 / 5;
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+  margin-bottom: 18px;
+}
+.founder-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+}
+
+.founder-name { font-size: 16.5px; font-weight: 700; }
+.founders .founder-role {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--sm-muted);
+  margin: 1px 0 12px;
+}
+.founders .founder-bio { font-size: 14px; color: var(--sm-muted); }
+
+html.js .founders .reveal:nth-child(2) { transition-delay: 0.07s; }
+html.js .founders .reveal:nth-child(3) { transition-delay: 0.14s; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background: var(--sm-surface);
+  border: 1px solid var(--sm-line);
+  border-radius: 12px;
+  padding: 26px 28px 30px;
+  transition: border-color 0.25s ease, background-color 0.35s ease;
+}
+.card:hover { border-color: var(--sm-line-strong); }
+
+.card-index {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--sm-muted);
+  margin-bottom: 22px;
+}
+.card-title { font-size: 16.5px; font-weight: 700; margin-bottom: 7px; }
+.card-body { font-size: 14px; color: var(--sm-muted); }
+
+/* contact */
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 24px 88px;
+  align-items: start;
+}
+
+.contact-meta { margin-top: 34px; }
+.contact-meta div {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  padding: 13px 0;
+  border-top: 1px solid var(--sm-line);
+}
+.contact-meta dt {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--sm-muted);
+  min-width: 72px;
+}
+.contact-meta dd { font-size: 15px; }
+.contact-meta a { border-bottom: 1px solid var(--sm-line); transition: border-color 0.2s ease; }
+.contact-meta a:hover { border-color: var(--sm-muted); }
+
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--sm-muted);
+  margin-bottom: 8px;
+}
+.field input,
+.field textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--sm-text);
+  background: var(--sm-surface);
+  border: 1px solid var(--sm-line);
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: border-color 0.2s ease, background-color 0.35s ease, color 0.35s ease;
+  resize: vertical;
+}
+.field input::placeholder,
+.field textarea::placeholder { color: var(--sm-placeholder); }
+.field input:focus,
+.field textarea:focus { outline: none; border-color: var(--sm-text); }
+
+.form-foot { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-top: 26px; }
+.form-note, .form-hint { font-size: 13.5px; color: var(--sm-muted); }
+.form-note a { border-bottom: 1px solid var(--sm-line); transition: border-color 0.2s ease; }
+.form-note a:hover { border-color: var(--sm-muted); }
+
+/* ---------- footer ---------- */
+
+.footer {
+  max-width: 1120px;
+  margin: 96px auto 0;
+  padding: 34px 32px 46px;
+  border-top: 1px solid var(--sm-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 28px;
+  flex-wrap: wrap;
+}
+
+.footer-brand { display: flex; align-items: center; gap: 9px; font-size: 16px; }
+.footer-copy { font-size: 12.5px; color: var(--sm-muted); }
+.footer-links { display: flex; gap: 22px; }
+.footer-links a {
+  font-size: 12.5px;
+  color: var(--sm-muted);
+  transition: color 0.2s ease;
+}
+.footer-links a:hover { color: var(--sm-text); }
+
+/* ---------- reveal on scroll (JS-enhanced) ---------- */
+
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s cubic-bezier(0.16, 0.6, 0.2, 1),
+              transform 0.7s cubic-bezier(0.16, 0.6, 0.2, 1);
+}
+html.js .reveal.in { opacity: 1; transform: none; }
+html.js .cards .reveal:nth-child(2) { transition-delay: 0.07s; }
+html.js .cards .reveal:nth-child(3) { transition-delay: 0.14s; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 880px) {
+  .who-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .cards { grid-template-columns: 1fr; }
+  .cards-label { margin-top: 64px; }
+  .section { padding-top: 84px; }
+  .who-stats div:first-child { border-top: 1px solid var(--sm-line); }
+}
+
+@media (max-width: 760px) {
+  .nav-links a:not(.btn) { display: none; }
+}
+
+@media (max-width: 720px) {
+  /* founders become a swipe carousel instead of a tall stack: 78% columns
+     leave the next card peeking in as the affordance */
+  .founders {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 78%;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .founders::-webkit-scrollbar { display: none; }
+  .founder { scroll-snap-align: start; }
+  /* shorter photos on phones so the portrait and the bio share the screen */
+  .founder-photo { aspect-ratio: 4 / 3; margin-bottom: 14px; }
+  .founders .founder-bio { font-size: 13.5px; }
+}
+
+@media (max-width: 560px) {
+  .nav { padding: 0 16px; }
+  .nav-links { gap: 12px; }
+  /* keep the business CTA; drop the redundant wordmark text (mark stays,
+     the hero wordmark is right below) */
+  .nav .btn-nav { padding: 8px 14px; font-size: 13px; }
+  .nav-brand > span { display: none; }
+  .controls { gap: 10px; }
+  .seg-opt { width: 40px; }
+  .seg::before { left: 6px; width: calc(50% - 12px); }
+  [data-city="seattle"] .seg::before { transform: translateX(calc(100% + 12px)); }
+  .seg-opt .long { display: none; }
+  .seg-opt .short { display: inline; }
+  .section { padding-left: 20px; padding-right: 20px; }
+  .footer { padding-left: 20px; padding-right: 20px; }
+  .hero { padding-bottom: 110px; }
+  .hero-actions .btn { padding: 12px 24px; }
+}
+
+@media (max-width: 360px) {
+  .hero-wordmark { font-size: 2.9rem; }
+}
+
+/* short viewports (landscape phones, squat windows): compress the hero stack
+   so the CTAs stay above the fold */
+@media (max-height: 520px) {
+  .hero { padding-top: calc(var(--nav-h) + 8px); padding-bottom: 56px; }
+  .hero-eyebrow { margin-bottom: 10px; }
+  .hero-wordmark { font-size: clamp(2.75rem, 11vh, 5rem); margin-bottom: 10px; }
+  .hero-tagline { margin-bottom: 8px; }
+  .hero-lede { margin-bottom: 20px; }
+  .scroll-cue { display: none; }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  body, .card, .btn, .toggle, .toggle-knob, .toggle .t-icon, .seg::before, .seg-opt, .hero-media { transition: none; }
+  .hero-inner > * { animation: none; }
+  .scroll-cue { animation: none; }
+  .scroll-cue i::after { animation: none; }
+  html.js .reveal { opacity: 1; transform: none; transition: none; }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>simplemode — a tech consultancy</title>
+<meta name="description" content="simplemode — a tech consultancy. Software, simplified: we build what you need without the jargon, the bloat, or the endless discovery phases.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" id="meta-theme" content="#232321">
+<link rel="canonical" href="https://simplemode.co/">
+<meta property="og:url" content="https://simplemode.co/">
+<meta property="og:title" content="simplemode — a tech consultancy">
+<meta property="og:description" content="Software, simplified. We build the software you need — no jargon, no bloat, no endless discovery phases.">
+<meta property="og:image" content="https://simplemode.co/assets/hero-seattle-night-poster.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2096%2096'%3E%3Crect%20width='96'%20height='96'%20rx='24'%20fill='%232A2A27'/%3E%3Crect%20x='27'%20y='27'%20width='10'%20height='42'%20rx='5'%20fill='%23F6F6F4'/%3E%3Crect%20x='45'%20y='27'%20width='26'%20height='42'%20rx='13'%20fill='%23F6F6F4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;700&display=swap">
+<link rel="stylesheet" href="css/style.css?v=1787267977">
+<script>
+  // theme + city bootstrap: runs before first paint so there's no flash
+  (function () {
+    var d = document.documentElement;
+    d.classList.add('js');
+    var theme = null, city = null;
+    try { theme = localStorage.getItem('sm-theme'); city = localStorage.getItem('sm-city'); } catch (e) {}
+    // first visit defaults to seattle at night; the visitor's own choices win after that
+    if (theme !== 'light' && theme !== 'dark') theme = 'dark';
+    if (city !== 'chicago' && city !== 'seattle') city = 'seattle';
+    d.setAttribute('data-theme', theme);
+    d.setAttribute('data-city', city);
+    var meta = document.getElementById('meta-theme');
+    if (meta) meta.content = theme === 'dark' ? '#232321' : '#EDEDEA';
+  })();
+</script>
+<noscript><style>
+  .nav { position: absolute; }
+  .controls { display: none; }
+  .hero-media { background: url('assets/hero-seattle-night-poster.jpg') center / cover no-repeat; }
+  @media (prefers-color-scheme: light) {
+    .hero-media { background-image: url('assets/hero-seattle-day-poster.jpg'); }
+  }
+</style></noscript>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <a class="nav-brand" href="#top" aria-label="simplemode — back to top">
+    <svg class="mark" width="20" height="19" viewBox="27 27 44 42" aria-hidden="true"><rect x="27" y="27" width="10" height="42" rx="5" fill="currentColor"/><rect x="45" y="27" width="26" height="42" rx="13" fill="currentColor"/></svg>
+    <span><span class="wm-light">simple</span><span class="wm-bold">mode</span></span>
+  </a>
+  <nav class="nav-links" aria-label="Primary">
+    <a href="#who-we-are">who we are</a>
+    <a href="#contact">contact us</a>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="City backdrop">
+        <button class="seg-opt" type="button" data-city-opt="chicago" aria-label="chicago" aria-pressed="false"><span class="long">chicago</span><span class="short">chi</span></button>
+        <button class="seg-opt" type="button" data-city-opt="seattle" aria-label="seattle" aria-pressed="true"><span class="long">seattle</span><span class="short">sea</span></button>
+      </div>
+      <button class="toggle" id="theme-toggle" type="button" role="switch" aria-checked="true" aria-label="Switch between light and dark mode" title="Light / dark mode">
+        <svg class="t-icon t-hint t-hint-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor" stroke="none"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>
+        <svg class="t-icon t-hint t-hint-moon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.2 13.6A8.5 8.5 0 0 1 10.4 3.8 8.5 8.5 0 1 0 20.2 13.6z"/></svg>
+        <span class="toggle-knob">
+          <svg class="t-icon t-knob-sun" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="currentColor" stroke="none"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>
+          <svg class="t-icon t-knob-moon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.2 13.6A8.5 8.5 0 0 1 10.4 3.8 8.5 8.5 0 1 0 20.2 13.6z"/></svg>
+        </span>
+      </button>
+    </div>
+    <a class="btn btn-nav" href="#contact">Let&rsquo;s talk</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <section class="hero" id="hero">
+    <div class="hero-media" id="hero-media" aria-hidden="true">
+      <video id="hero-video" autoplay loop muted playsinline preload="auto" disablepictureinpicture tabindex="-1"></video>
+      <div class="hero-scrim"></div>
+    </div>
+    <script>
+      // point the video at the variant chosen by the bootstrap, pre-parse,
+      // so the browser only ever fetches the footage it will actually show
+      (function () {
+        var d = document.documentElement;
+        var v = document.getElementById('hero-video');
+        var key = (d.getAttribute('data-city') || 'seattle') + '-' + (d.getAttribute('data-theme') === 'dark' ? 'night' : 'day');
+        v.poster = 'assets/hero-' + key + '-poster.jpg';
+        v.src = 'assets/hero-' + key + '.mp4';
+      })();
+    </script>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">a tech consultancy</p>
+      <h1 class="hero-wordmark"><span class="wm-light">simple</span><span class="wm-bold">mode</span></h1>
+      <p class="hero-tagline">Software, simplified.</p>
+      <p class="hero-lede">We build the software you need — no jargon, no bloat, no endless discovery phases.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Let&rsquo;s talk</a>
+        <a class="btn btn-ghost" href="#who-we-are">Learn more</a>
+      </div>
+    </div>
+    <a class="scroll-cue" href="#who-we-are"><span>scroll</span><i></i></a>
+  </section>
+
+  <section class="section" id="who-we-are">
+    <h2 class="section-label reveal">who we are</h2>
+    <div class="who-grid">
+      <div class="who-intro reveal">
+        <h3 class="section-title">Most teams don&rsquo;t need more technology. They need the right technology.</h3>
+        <p>Software projects usually fail for a simple reason: they get overcomplicated. Vendors oversell, scope balloons, timelines slip. We started simplemode to do the opposite. We take the time to understand your problem, build the simplest thing that solves it well, and hand you something your team can actually live with.</p>
+        <p class="muted">simplemode is deliberately small — no account managers, no handoffs to a junior bench. The people below are the people you&rsquo;ll work with: senior engineers whose paths barely overlap, from platform architecture at Microsoft to devices and robotics at Amazon to AI in healthcare. Between us, most problems look familiar from somewhere.</p>
+      </div>
+      <div class="reveal">
+        <p class="stats-eyebrow">our background</p>
+        <dl class="who-stats">
+          <div><dt>Ex-Microsoft</dt><dd>principal architect</dd></div>
+          <div><dt>Ex-Amazon</dt><dd>Alexa, Scout &amp; AGI</dd></div>
+          <div><dt>Telehealth</dt><dd>AI agents in production</dd></div>
+        </dl>
+        <p class="stats-note">Our habits come from places where software serves hundreds of millions of people and a bad release makes the news. We kept the discipline — and left the bureaucracy. That&rsquo;s what big-tech experience is worth to you.</p>
+      </div>
+    </div>
+    <h3 class="section-label cards-label reveal">the founders</h3>
+    <div class="founders">
+      <article class="founder reveal">
+        <div class="founder-photo"><img src="assets/founder-casey.jpg" alt="Casey Yu, cofounder of simplemode, in front of a glacier" width="720" height="900" loading="lazy"></div>
+        <h4 class="founder-name">Casey Yu</h4>
+        <p class="founder-role">cofounder</p>
+        <p class="founder-bio">Casey has spent her career bringing order to systems that have outgrown their architecture. As a Principal Architect at Microsoft she led large-scale performance transformations, aligning many teams around one technical goal at a time. A Staff Engineer run at Block and a stint as a startup CTO showed her both big-company scale and small-company speed — and which habits to keep from each. She treats constraints as invitations to invent.</p>
+      </article>
+      <article class="founder reveal">
+        <div class="founder-photo"><img src="assets/founder-michael.jpg" alt="Michael Beskin, cofounder of simplemode, in a garden" width="720" height="900" loading="lazy"></div>
+        <h4 class="founder-name">Michael Beskin</h4>
+        <p class="founder-role">cofounder</p>
+        <p class="founder-bio">Michael has spent twelve years building systems that have to work every time: client code in Alexa&rsquo;s speech-recognition path, hardware abstraction layers for ATMs — where a bug isn&rsquo;t an inconvenience, it&rsquo;s someone&rsquo;s money — deployment systems for Amazon&rsquo;s Scout delivery robots already out in the world, and the evaluation harness for Amazon&rsquo;s foundation models. The systems are the craft; the person using them is the point.</p>
+      </article>
+      <article class="founder reveal">
+        <div class="founder-photo"><img src="assets/founder-dan.jpg" alt="Daniel Pourhadi, founding engineer at simplemode" width="720" height="900" loading="lazy"></div>
+        <h4 class="founder-name">Daniel Pourhadi</h4>
+        <p class="founder-role">founding engineer</p>
+        <p class="founder-bio">Dan spent the last six years building software in healthcare, where the data is messy and the stakes are real. At K Health he co-architected their next-generation telehealth platform, led the engineering team, and shipped patient-facing AI agents grounded in live FHIR records. Sixteen years across native mobile, backend, and ML, all of it self-taught — he learned to program on a Palm III in middle school, which is either a credential or a diagnosis.</p>
+      </article>
+    </div>
+    <h3 class="section-label cards-label reveal">what we do</h3>
+    <div class="cards">
+      <article class="card reveal">
+        <p class="card-index">01</p>
+        <h4 class="card-title">Custom software, built right</h4>
+        <p class="card-body">Web platforms, internal tools, integrations, and infrastructure designed to fit your business, not the other way around.</p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">02</p>
+        <h4 class="card-title">AI, where it actually helps</h4>
+        <p class="card-body">We know modern AI well, which is exactly why we&rsquo;ll tell you when you need it — and when a simpler solution will serve you better.</p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">03</p>
+        <h4 class="card-title">Modernization without the drama</h4>
+        <p class="card-body">Legacy systems, technical debt, half-finished projects. We&rsquo;ve seen it all, and we&rsquo;re happy to clean it up.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <h2 class="section-label reveal">contact us</h2>
+    <div class="contact-grid">
+      <div class="contact-intro reveal">
+        <h3 class="section-title">Ready when you are.</h3>
+        <p class="muted">Tell us what&rsquo;s slowing you down, and we&rsquo;ll give you an honest read on whether we can help. If we&rsquo;re not the right fit, we&rsquo;ll say so and point you somewhere better.</p>
+        <dl class="contact-meta">
+          <div><dt>email</dt><dd><a href="mailto:hello@simplemode.co">hello@simplemode.co</a></dd></div>
+        </dl>
+      </div>
+      <form class="contact-form reveal" id="contact-form">
+        <div class="field">
+          <label for="name">name</label>
+          <input id="name" name="name" type="text" autocomplete="name" placeholder="Your name" required>
+        </div>
+        <div class="field">
+          <label for="email">email</label>
+          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
+        </div>
+        <div class="field">
+          <label for="message">message</label>
+          <textarea id="message" name="message" rows="5" placeholder="Tell us what&rsquo;s slowing you down…" required></textarea>
+        </div>
+        <div class="form-foot">
+          <button class="btn btn-primary" type="submit">Start the conversation</button>
+          <p class="form-hint" id="form-hint">No pitch decks. No pressure. Just a straight answer.</p>
+          <p class="form-note" id="form-note" hidden>Opening your email app… If nothing happens, write us at <a href="mailto:hello@simplemode.co">hello@simplemode.co</a>.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <span class="footer-brand">
+    <svg class="mark" width="17" height="16" viewBox="27 27 44 42" aria-hidden="true"><rect x="27" y="27" width="10" height="42" rx="5" fill="currentColor"/><rect x="45" y="27" width="26" height="42" rx="13" fill="currentColor"/></svg>
+    <span><span class="wm-light">simple</span><span class="wm-bold">mode</span></span>
+  </span>
+  <p class="footer-copy">© <span id="year">2026</span> simplemode · Simple is a feature.</p>
+  <nav class="footer-links" aria-label="Footer">
+    <a href="#top">top</a>
+    <a href="#who-we-are">who we are</a>
+    <a href="#contact">contact us</a>
+  </nav>
+</footer>
+
+<script src="js/main.js?v=1787267977" defer></script>
+</body>
+</html>
